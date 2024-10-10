@@ -12,7 +12,6 @@ const EventDetails = async ({params: {id}, searchParams}: SearchParamProps) => {
     eventId: event._id,
     page: searchParams.page as string
   })
-  console.log(event.organizer)
   return (
     <>
     <section className='flex justify-center bg-primary-50 bg-dotted-pattern bg-contain' >
