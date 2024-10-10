@@ -26,8 +26,12 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={poppins.variable}>{children}</body>
+        <body className={poppins.variable}>{children}
+        <script src="https://cdn.botpress.cloud/webchat/v2.2/inject.js"></script>
+        <script src="https://files.bpcontent.cloud/2024/10/10/14/20241010143016-RINAM0LF.js"></script>
+        </body>
       </html>
+      
     </ClerkProvider>
   )
 }
