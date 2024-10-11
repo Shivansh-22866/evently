@@ -1,10 +1,16 @@
 import EventForm from "@/components/shared/EventForm";
+import { getUser } from "@/lib/actions/user.actions";
 import { auth } from "@clerk/nextjs/server";
 import React from "react";
 
-const CreateEvent = () => {
+const CreateEvent = async () => {
 
   const {userId} : {userId: string | null} = auth()
+  let mongoUser = null
+
+  if (userId) {
+    mongoUser = await getUser(userId)
+  }
 
   return (
     <>
@@ -15,7 +21,7 @@ const CreateEvent = () => {
       </section>
 
       <div className="wrapper my-8">
-        <EventForm userId={userId!} type="Create" />
+        <EventForm userId={mongoUser?._id} type="Create" />
       </div>
     </>
   );
