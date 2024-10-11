@@ -8,28 +8,31 @@ import { DeleteConfirmation } from './DeleteConfirmation'
 import { getUser } from '@/lib/actions/user.actions'
 
 type CardProps = {
-  event: IEvent,
+  event: IEvent | null | undefined, // Allow event to be null or undefined
   hasOrderLink?: boolean,
   hidePrice?: boolean
 }
 
 const Card = async ({ event, hasOrderLink, hidePrice }: CardProps) => {
-  const {userId} = auth()
+  const { userId } = auth()
   
-  // Get the MongoDB user document that matches the Clerk ID
   let mongoUser = null
   if (userId) {
     mongoUser = await getUser(userId)
   }
 
-  // Now we can compare MongoDB _id with event organizer _id
-  const isEventCreator = mongoUser?._id.toString() === event.organizer._id.toString()
+  // Check if event and its organizer exist
+  const isEventCreator = mongoUser?._id.toString() === event?.organizer?._id.toString()
+
+  if (!event) {
+    return <div className="text-red-500"></div>;
+  }
 
   return (
     <div className="group relative flex min-h-[380px] w-full max-w-[400px] flex-col overflow-hidden rounded-xl bg-white shadow-md transition-all hover:shadow-lg md:min-h-[438px]">
       <Link 
         href={`/events/${event._id}`}
-        style={{backgroundImage: `url(${event.imageUrl})`}}
+        style={{ backgroundImage: `url(${event.imageUrl})` }}
         className="flex-center flex-grow bg-gray-50 bg-cover bg-center text-grey-500"
       />
 
@@ -44,14 +47,16 @@ const Card = async ({ event, hasOrderLink, hidePrice }: CardProps) => {
       )}
 
       <div className="flex min-h-[230px] flex-col gap-3 p-5 md:gap-4"> 
-        {!hidePrice && <div className="flex gap-2">
-          <span className="p-semibold-14 w-min rounded-full bg-green-100 px-4 py-1 text-green-60">
-            {event.isFree ? 'FREE' : `₹${event.price}`}
-          </span>
-          <p className="p-semibold-14 w-min rounded-full bg-grey-500/10 px-4 py-1 text-grey-500 line-clamp-1">
-            {event.category.name}
-          </p>
-        </div>}
+        {!hidePrice && (
+          <div className="flex gap-2">
+            <span className="p-semibold-14 w-min rounded-full bg-green-100 px-4 py-1 text-green-60">
+              {event.isFree ? 'FREE' : `₹${event.price}`}
+            </span>
+            <p className="p-semibold-14 w-min rounded-full bg-grey-500/10 px-4 py-1 text-grey-500 line-clamp-1">
+              {event.category?.name}
+            </p>
+          </div>
+        )}
 
         <p className="p-medium-16 p-medium-18 text-grey-500">
           {formatDateTime(event.startDateTime).dateTime}
@@ -63,7 +68,7 @@ const Card = async ({ event, hasOrderLink, hidePrice }: CardProps) => {
 
         <div className="flex-between w-full">
           <p className="p-medium-14 md:p-medium-16 text-grey-600">
-            {event.organizer.firstName} {event.organizer.lastName}
+            {event.organizer?.firstName} {event.organizer?.lastName}
           </p>
 
           {hasOrderLink && (
